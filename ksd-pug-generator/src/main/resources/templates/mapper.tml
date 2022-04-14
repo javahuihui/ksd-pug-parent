@@ -1,0 +1,16 @@
+package ${packagename};
+
+import ${entityPackage}.${beanModel};
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+/**
+ * ${beanModel}Mapper
+ * 创建人:${author}<br/>
+ * 时间：${datetime} <br/>
+ * 源码下载：${gitlink}
+ * 飞哥B站地址：${burl}
+ * @version ${version}<br/>
+ *
+*/
+public interface ${beanModel}Mapper extends BaseMapper<${beanModel}>{
+}

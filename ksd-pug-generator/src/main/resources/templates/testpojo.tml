@@ -1,0 +1,15 @@
+package ${packagename};
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@TableName("${tablename}")
+public class ${model}{
+
+    // ${kuohao2('user.id')}
+    <#list fields as field>
+    // ${field.comment}
+    private ${field.ctype} ${field.name};
+    </#list>
+}

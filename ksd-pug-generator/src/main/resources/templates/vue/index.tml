@@ -1,0 +1,395 @@
+<template>
+  <div class="page light">
+    <div class="page-main-no2">
+      <div class="ksd-xqui-body">
+        <div class="xquimini-content-page" style="height: calc(100% - 36px)">
+          <div class="xquimini-container xquimini-page-anim">
+            <div class="xquimini-main">
+              <div class="pug-card">
+                <div class="pug-card-body">
+                  <div class="pug-form pug-form-inline"> <#if  isCategory>
+                    <div class="standardFormRow___2SuxW standardFormRowBlock___25ip_" style="padding-bottom:11px;">
+                      <div class="label___2igWv"><span>所属类目</span></div>
+                      <div class="content___v8hLk">
+                        <div class="pug-row pug-form-item" style="row-gap:0px;">
+                          <div class="pug-col pug-form-item-control">
+                            <div class="pug-form-item-control-input">
+                              <div class="pug-form-item-control-input-content">
+                                <div class="tagSelect___lC4Pt hasExpandTag___2bftZ">
+                                  <span @click.prevent="searchByCid(-1)" class="pug-tag" :class="[cindex==-1?'pug-tag-checkable':'']">全部</span>
+                                  <span @click.prevent="searchByCid(index)" v-for="(item,index) in citems"  :key="item.id" class="pug-tag" :class="[cindex==index?'pug-tag-checkable':'']">{{ item.name }}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div></#if>
+                    <div class="standardFormRow___2SuxW standardFormRowLast___3ZKmo standardFormRowGrid___TWpoF">
+                      <div class="content___v8hLk">
+                        <div class="pug-row" style="margin-left: -8px; margin-right: -8px; row-gap: 0px;">
+                          <div class="pug-col pug-col-xs-24 pug-col-sm-24 pug-col-md-12 pug-col-lg-10 pug-col-xl-8" style="padding-left: 8px; padding-right: 8px;">
+                            <div class="xqui-inline"><label class="xqui-form-label">关键词</label>
+                              <div class="xqui-input-inline">
+                                <input autocomplete="off" v-model.trim="keyword"  class="xqui-input" type="text">
+                              </div>
+                            </div>
+                            <div class="xqui-inline">
+                              <button @click.prevent="searchData" class="xqui-btn xqui-btn-primary" type="submit">搜 索</button>
+                              <button class="xqui-btn xqui-btn-primary" @click.prevent="searchRush" type="submit">回收站</button>
+                              <button class="xqui-btn xqui-btn-primary mr10" @click.prevent="delBatch" type="submit">批量删除</button>
+                              <router-link to="/${model}/add">
+                                <button class="xqui-btn xqui-btn-primary" type="submit"><i class="iconfont icon-tianjia1"></i> 添加${title}</button>
+                              </router-link>
+                            </div>
+                          </div>
+                          <div class="pug-col pug-col-xs-24 pug-col-sm-24 pug-col-md-12 pug-col-lg-10 pug-col-xl-8" style="padding-left: 8px; padding-right: 8px;">
+                            <div class="pug-row pug-form-item" style="row-gap: 0px;">
+                              <div class="pug-col pug-form-item-label">
+                                <label  title="活跃用户">发布状态</label></div>
+                                <div class="pug-col pug-form-item-control pug-col-xs-24 pug-col-sm-24 pug-col-md-12">
+                                <div class="pug-form-item-control-input">
+                                  <div class="pug-form-item-control-input-content">
+                                      <pug-select :items="statusItems" @change="searchByStatus"></pug-select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="xqui-form xqui-border-box xqui-table-view">
+                <div class="xqui-table-box">
+                  <div class="xqui-table-header">
+                    <table border="0" cellpadding="0" cellspacing="0"  class="xqui-table">
+                      <thead>
+                      <tr>
+                        <th class=" xqui-table-col-special">
+                          <div class="xqui-table-cell laytable-cell-checkbox" @click="selectAll">
+                            <input type="checkbox">
+                            <div class="xqui-unselect xqui-form-checkbox"><i class="xqui-icon" v-bind:class="[allchecked?'xqui-icon-ok':'']"></i></div>
+                          </div>
+                        </th>
+                        <#list tableInfos as tableinfo>
+                         <#if tableinfo.name?index_of('content')==-1 && tableinfo.name?index_of('desc')==-1>
+                        <th class=" xqui-unselect">
+                          <div class="xqui-table-cell"><span>${tableinfo.comment}</span></div>
+                        </th>
+                        </#if>
+                        </#list>
+                        <th class=" xqui-table-col-special">
+                          <div class="xqui-table-cell"><span>操作</span></div>
+                        </th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr :key="item.id"  data-index="0" v-for="(item , index) in items">
+                        <td class="xqui-table-col-special" data-field="0" data-key="1-0-0">
+                          <div class="xqui-table-cell laytable-cell-checkbox" @click="changeChecked(index)">
+                            <input   type="checkbox">
+                            <div class="xqui-unselect xqui-form-checkbox"><i class="xqui-icon" :class="[item.checked?'xqui-icon-ok':'']"></i></div>
+                          </div>
+                        </td>
+                         <#list tableInfos as data>
+                         <#if data.name?index_of('content')==-1 && data.name?index_of('desc')==-1>
+                            <#if data.name?index_of('name')!=-1 || data.name?index_of('title')!=-1>
+                            <td>
+                               <div class="xqui-table-cell"><a href="#" :title="${'item.'+data.name}" target="_blank">{{item.${data.name}}}</a></div>
+                            </td>
+                            <#elseif data.name?index_of('price')!=-1 || data.name?index_of('money')!=-1>
+                            <td>
+                              <div class="xqui-table-cell">{{'￥'+item.${data.name}}}</div>
+                            </td>
+                            <#elseif data.name?index_of('status')!=-1>
+                            <td @click="updateRelation(index,'${data.name}')">
+                              <div class="xqui-table-cell" :style="{'color':[item.${data.name} ==1?'green':'red']}">
+                                {{ item.${data.name} == 1 ? "发布中" : "未发布" }}
+                              </div>
+                            </td>
+                            <#elseif data.name?index_of('isdelete')!=-1 || data.name?index_of('isDelete')!=-1>
+                            <td @click="updateRelation(index,'${data.name}')">
+                              <div class="xqui-table-cell" :style="{'color':[item.${data.name} ==1?'green':'red']}">
+                                {{ item.${data.name} == 1 ? "删除" : "未删除" }}
+                              </div>
+                            </td>
+                            <#elseif data.name?index_of('img')!=-1 || data.name?index_of('pic')!=-1
+                                || data.name?index_of('thumn')!=-1 || data.name?index_of('avatar')!=-1>
+                             <td>
+                              <div class="xqui-table-cell"><img :src="item.${data.name}" class="pug-table-img"></div>
+                             </td>
+                            <#else>
+                            <td>
+                              <div class="xqui-table-cell">{{item.${data.name}}}</div>
+                            </td>
+                            </#if>
+                        </#if>
+                        </#list>
+                        <td class="xqui-table-col-special">
+                          <div class="xqui-table-cell">
+                            <router-link :to="'/${model}/edit/'+item.id" v-if="item.isdelete==0"  class="xqui-btn xqui-btn-normal xqui-btn-xs data-count-edit">
+                              <i class="iconfont icon-bianji"></i>编辑
+                            </router-link>
+                            <a @click.prevent="deleteItem(index)" v-if="item.isdelete==0" class="xqui-btn xqui-btn-xs xqui-btn-danger data-count-delete"><i class="iconfont icon-remove2"></i>删除</a>
+                            <a @click.prevent="updateRelation(index,'isdelete')" v-if="item.isdelete==1" class="xqui-btn xqui-btn-xs xqui-btn-danger data-count-delete"><i class="iconfont icon-remove2"></i>恢复</a>
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
+                      <tfoot>
+                      <tr>
+                        <td colspan="20">
+                          <div class="text-center ksd-empty" v-if="total == 0">
+                            <i class="iconfont icon-zanwu2" style="font-size: 132px;color:#ddd;"></i>
+                            <span>暂无数据</span></div>
+                        </td>
+                      </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+                <div class="xqui-table-page">
+                  <pug-page
+                    :page-index="pageNo"
+                    :total="total"
+                    :page-size="pageSize"
+                    @change="pageChange">
+                  </pug-page>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+
+import ${model}Service from '@/services/${model}'<#if isCategory>
+import categoryService from '@/services/${model}category'</#if>
+import pugDialog from "@/plugins/PugDialog";
+import pugMessage from "@/plugins/PugMessage";
+import {isEmpty} from "@/utils/validate";
+
+export default {
+  name: "${beanModel}Index.vue",
+  components: {},
+  data() {
+    return {
+      pageNo: 1 //当前页码
+      , pageSize: 10 //每页显示20条数据
+      , total: 0 //总记录数
+      , pages: 0//总页数
+      , keyword: ""//搜索关键词
+      , isDelete: 0//删除状态
+      , status: ""//发布状态
+      , sortFlag: false//排序字段
+      , allchecked: false // 控制全选和反选
+      , items: [] // 装载数据的容器
+      , statusItems: [{text:"请选择",value:""},{text:"发布中",value:"1"},{text:"未发布",value:"0"}] // 用控制选择分类的选中和激活
+      , batchIds: [] // 装在批量删除的ids<#if  isCategory>
+      , citems: [] // 装载数据的分类的
+      , categoryId: ""//按照分类进行搜索
+      , cindex: -1 // 用控制选择分类的选中和激活</#if>
+    }
+  },
+
+  created() {
+    // 页面加载执行初始化数据查询
+    this.loadData();<#if isCategory>
+    // 页面加载执行分类数据的初始化
+    this.loadCategoires();</#if>
+  },
+
+  methods: {
+    // 1: 查询${title}列表分页数据
+    loadData() {
+      const params = {
+        pageNo: this.pageNo
+        ,pageSize: this.pageSize
+        ,isDelete: this.isDelete
+        ,keyword: this.keyword
+        ,status: this.status<#if isCategory>
+        ,categoryId: this.categoryId</#if>
+      };
+
+      // 请求和查询${title}服务器数据
+      ${model}Service.find${beanModel}Page(params).then(res => {
+        const {total, pages, records} = res.data;
+        // 分页要进行渲染
+        this.total = total;
+        // 总页数，后续可以判断边界
+        this.pages = pages;
+        // 控制元素是否选中和不选中
+        records.forEach(item => item.checked = false);
+        this.items = records;
+      })
+    },
+
+    // 2 ：搜索${title}
+    searchData() {
+      this.pageNo = 1;
+      this.pageSize = 10;
+      this.total = 0;
+      this.pages = 0;
+      this.isDelete = 0;
+      this.items = [];
+      //请注意千万不清空 keyword
+      this.loadData();
+    },
+
+    <#if isCategory>
+    //3: 根据分类搜索${title}
+    searchByCid(index) {
+      this.cindex = index;
+      this.categoryId = index != -1 ? this.citems[index].id : "";
+      this.pageNo = 1;
+      this.pageSize = 10;
+      this.total = 0;
+      this.pages = 0;
+      this.isDelete = 0;
+      this.items = [];
+      this.loadData();
+    },
+    </#if>
+
+    //4: 根据状态搜索${title}
+    searchByStatus(item){
+      this.status = item.value;
+      this.pageNo = 1;
+      this.pageSize = 10;
+      this.total = 0;
+      this.pages = 0;
+      this.isDelete = 0;
+      this.items = [];
+      //请注意千万不清空 keyword
+      this.loadData();
+    },
+
+    //5：查询回收站 ${title}
+    searchRush() {
+      this.pageNo = 1;
+      this.pageSize = 10;
+      this.total = 0;
+      this.pages = 0;
+      this.isDelete = 1;
+      this.items = [];
+      //请注意千万不清空 keyword
+      this.loadData();
+    },
+
+    // 6 : 删除${title}
+    deleteItem(index) {
+      const id = this.items[index].id;
+      pugDialog.confirm("删除提示", "你确定删除吗?", {time: 10, sureText: "删除${title}", closeText: "关闭"}).then(() => {
+        ${model}Service.saveUpdate${beanModel}({id: id, isdelete: 1}).then(res => {
+          if (res.status == 200) {
+            // 删除成功，直接把数据重新查询一次
+            this.items.splice(index, 1);
+            // 如果当前页删除完毕，查询查询一次。
+            if (this.items.length == 0) {
+              this.loadData();
+            }
+          }
+        })
+      });
+    },
+
+    // 7: 批量删除${title}
+    delBatch() {
+      var batchIds = this.batchIds.join(",");
+      if (isEmpty(batchIds)) {
+        pugMessage.warn("请选择删除的数据!!!");
+        return;
+      }
+      // 执行批量删除
+      pugDialog.confirm("删除提示", "你确定删除吗?", {time: 10, sureText: "删除${title}", closeText: "关闭"}).then(() => {
+        ${model}Service.delBatch${beanModel}(batchIds).then(res => {
+          if (res.status == 200) {
+            this.loadData();
+          }
+        })
+      });
+    },
+
+    // 9: 修改状态控制
+    updateRelation(index, field) {
+      // 状态控制
+      const changeVal = this["items"][index][field] == 1 ? 0 : 1;
+      // 修改
+      const id = this.items[index].id;
+      var params = {id: id};
+      params[field] = changeVal;
+      ${model}Service["saveUpdate${beanModel}"](params)["then"](res => {
+        if (res.status == 200) {
+          pugMessage["success"]("修改成功");
+          this.items[index][field] = changeVal;
+        }
+      })
+    },
+
+    // 10 : 控制表格的选中
+    changeChecked(index) {
+      // 1: 开关
+      this.items[index].checked = !this.items[index].checked;
+      // 2 : 所有元素的个数
+      var len = this.items.length;
+      // 3： 选中元素的个数
+      var clen = this.items.filter(item => item.checked).length;
+      // 4: 拿选中元素的个数和所有元素的个数比较，如果相等说明全部选中了
+      var flag = len == clen;
+      // 5: 把顶部复选框选中
+      this.allchecked = flag;
+      // 赋值相关
+      var selectId = this.items[index].id;
+      // 查询元素是否存在数组中，如果存在返回元素所在数组的位置，如果找不到返回 -1
+      var selectIndex = this.batchIds.findIndex((item) => item == selectId);
+      // 如果返回是-1 ,说明不存在数组中，
+      if (selectIndex == -1) {
+        // 那么就添加数组
+        this.batchIds.push(selectId);
+      } else {
+        // 如果存在，说明用户取消选中，就要元素从数组中剔除（删除）
+        this.batchIds.splice(selectIndex, 1);
+      }
+    },
+
+    // 选中所有的数据
+    selectAll() {
+      // 1: 自身开关
+      this.allchecked = !this.allchecked;
+      // 2: 开关影响元素 自身求反，真变成假， 假变成真
+      this.items.map(item => item.checked = !item.checked);
+      //this.items.map(item => item.checked =  this.allchecked); // 2: 开关影响元素 自身求反，要么全真， 要么全假
+      // 3: 取值相关
+      var selectItems = this.items.filter(item => item.checked);
+      // 4：每次操作清楚一次，把上次的累加进去。就不正确
+      this.batchIds = [];
+      selectItems.forEach(item => {
+        this.batchIds.push(item.id);
+      });
+    },
+
+    // 分页执行相关
+    pageChange(page) {
+      this.pageNo = page
+      this.loadData();
+    },
+
+    <#if isCategory>
+    // 加载分类
+    loadCategoires() {
+      categoryService.find${beanModel}CategoryList().then(res => {
+        this.citems = res.data;
+      })
+    }
+    </#if>
+  }
+}
+</script>
+<style scoped>
+</style>

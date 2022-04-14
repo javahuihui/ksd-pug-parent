@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>${title}管理添加 - 春天集团</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/plugins/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="/asserts/css/ksd.css" media="all">
+  <style>
+    .layui-card-header{font-size:18px;font-weight: bold}
+     [v-cloak]{display: none}
+  </style>
+</head>
+<body>
+<div class="layui-fluid" id="app" v-cloak>
+<div class="layui-containerx" style="padding: 30px;background: #fff;">
+  <div class="layui-row layui-col-space15">
+  <div class="layui-col-md12">
+    <div class="layui-card" style="overflow: hidden;padding-bottom: 20px;">
+      <h3 class="fl fw fz24">${title}{{id?'编辑':'添加'}}</h3>
+      <div class="layui-input-blockc fr" >
+        <a href="/admin/${model}/list"  class="layui-btn layui-btn-primary">返回</a>
+        <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+      </div>
+    </div>
+
+ <#list fields as data>
+ <#if data.name=='id'>
+    <input type="hidden" v-model="${model}.id">
+ <#elseif data.name=='status'>
+    <div class="layui-card layui-form" >
+        <div class="layui-card-header">发布状态</div>
+        <div class="layui-card-body layui-row layui-col-space10">
+        <div class="layui-col-md12">
+          <input type="radio" name="status" value="1" title="发布" checked="checked">
+          <div class="layui-unselect layui-form-radio" @click="${model}.status = 1" :class="[${model}.status==1?'layui-form-radioed':'']">
+            <i class="layui-anim layui-icon layui-anim-scaleSpring"></i>
+            <div>发布</div>
+          </div>
+          <input type="radio" name="status" value="0" title="未发布" >
+          <div class="layui-unselect layui-form-radio" @click="${model}.status = 0" :class="[${model}.status==0?'layui-form-radioed':'']">
+            <i class="layui-anim layui-icon layui-anim-scaleSpring"></i>
+            <div>未发布</div>
+          </div>
+        </div>
+        </div>
+    </div>
+<#elseif data.name=='categoryid' || data.name="categoryId" || data.name=='cid'>
+    <div class="layui-card layui-form" >
+        <div class="layui-card-header">请选择${data.comment}</div>
+        <div class="layui-card-body layui-row layui-col-space10">
+         <div class="layui-col-md12"><select name="city" lay-verify="">
+           <option value="">请选择一个${data.comment}</option>
+           <option :value="cate.id" v-for="(cate,index) in rootCategory">{{cate.title}}</option>
+         </select>
+         <div class="layui-unselect layui-form-select"  @click="expandCategory" :class="[expand?'layui-form-selected':'']">
+             <div class="layui-select-title">
+               <input type="hidden" v-model="${model}.${data.name}">
+               <input type="text" placeholder="请选择一个${data.comment}" value="" v-model="${model}.categoryname" readonly="" class="layui-input layui-unselect">
+               <i class="layui-edge"></i>
+             </div>
+             <dl class="layui-anim layui-anim-upbit" style="">
+               <dd lay-value="" class="layui-select-tips" @click="selectCategory(-1)">请选择一个${data.comment}</dd>
+               <dd :lay-value="ccate.id" v-for="(ccate,index) in rootCategory" @click="selectCategory(index)" class="">{{ccate.title}}</dd>
+             </dl>
+           </div>
+         </div>
+        </div>
+    </div>
+<#elseif data.name=='description' || data.name=='desc' || data.name=='inro'>
+    <div class="layui-card">
+      <div class="layui-card-header">${data.comment}</div>
+      <div class="layui-card-body layui-row layui-col-space10">
+        <div class="layui-col-md12">
+          <textarea type="text" name="title" placeholder="请输入描述" v-model="${model}.${data.name}" maxlength="400" autocomplete="off" class="layui-textarea"></textarea>
+        </div>
+      </div>
+    </div>
+<#elseif data.name=='detail' || data.name=='content'>
+    <div class="layui-card">
+      <div class="layui-card-header">${data.comment}</div>
+      <div class="layui-card-body layui-row layui-col-space10">
+        <div class="layui-col-md12">
+          <div name="" placeholder="请输入${data.comment}内容" id="editor" ></div>
+        </div>
+      </div>
+    </div>
+<#elseif data.name=='cover' || data.name=='img' || data.name=='bgimg' || data.name=='avatar'>
+    <div class="layui-card layui-form" >
+      <div class="layui-card-header">${data.comment}</div>
+      <div class="layui-card-body layui-row layui-col-space10">
+        <div class="layui-col-md12">
+          <input type="text"  placeholder="请上传产品封面（尺寸：293 * 375）" v-model="${model}.${data.name}" autocomplete="off" class="layui-input">
+          <input id="${data.name}" type="file" onchange="submit2('${data.name}','${data.name}')" style="position: absolute;top:15px;right:10px;"/>
+          <span class="ref fz12 pr tp2" style="color: red;">（尺寸：293 * 375）</span>
+        </div>
+        <div class="layui-col-12">
+          <img :src="${model}.cover" style="width: 200px" alt="">
+        </div>
+      </div>
+    </div>
+<#else>
+    <#if data.name!='uuid' && data.name!='version' && data.name!='createTime' && data.name!='updateTime' && data.name!='author' && data.name!='userId' && data.name!='username'
+    && data.name!='isDelete' && data.name!='nickname'>
+     <div class="layui-card">
+       <div class="layui-card-header">${data.comment}</div>
+       <div class="layui-card-body layui-row layui-col-space10">
+         <div class="layui-col-md12">
+           <input type="text" name="${data.name}" placeholder="请输入${data.comment}" maxlength="255"  v-model="${model}.${data.name}" autocomplete="off" class="layui-input">
+         </div>
+       </div>
+     </div>
+     </#if>
+</#if>
+</#list>
+    <div class="layui-card" style="margin-top: 30px;text-align: center">
+      <div class="layui-input-blockc">
+        <button type="submit" class="layui-btn" lay-submit="" @click="saveupdate" lay-filter="demo1">立即提交</button>
+        <a href="/admin/${model}/list"  class="layui-btn layui-btn-primary">返回</a>
+      </div>
+    </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <script src="/asserts/js/vue.min.js"></script>
+  <script src="/asserts/js/axios.min.js"></script>
+  <script type="text/javascript" src="/asserts/editor/wangEditor.min.js"></script>
+  <script>
+      var ${model}vue = new Vue({
+        el:"#app",
+        editor:null,
+        data:{
+ <#if isCategory==1>expand:false,
+          rootCategory:[],</#if>
+          title:"${title}添加",
+          id:"${kuohao2('id!')}",
+          ${model}:{status:1,cover:""}
+        },
+        created:function(){
+         <#if isCategory==1> // 初始化分類
+          this.initCategory();</#if>
+        },
+        mounted:function(){
+          var that = this;
+          // 編輯初始化
+          if(that.id){
+             <#if isEditor==1>that.initEditor(function(){
+              that.getobj();
+            });<#else>that.getobj();</#if>
+          }<#if isEditor==1>else{
+            // 添加初始化
+            that.initEditor();
+          }</#if>
+        },
+        methods:{
+          // 查询数据明细
+          getobj:function(){
+            var that = this;
+            axios.get("/admin/${model}/get/"+that.id).then(function(res){
+              that.${model} = res.data.data;
+               <#if isEditor==1>that.editor.txt.html(that.${model}.detail) // 重新设置编辑器内容</#if>
+            })
+          }
+          // 执行保存
+          ,saveupdate:function(){
+            var that = this;
+            axios.post("/admin/${model}/saveupdate",that.${model}).then(function(res){
+                alert("操作成功!!!");
+                window.location.href = "/admin/${model}/list";
+            });
+          }
+
+          <#if isEditor==1>
+          // 初始化编辑器
+          ,initEditor: function (callback) {
+            var that = this;
+            const E = window.wangEditor;
+            that.editor = new E("#editor");
+            // 配置 server 接口地址
+            that.editor.config.uploadImgServer = '/admin/upload';
+            that.editor.config.uploadFileName = 'file'
+            that.editor.config.uploadImgHooks = {
+              // 上传图片之前
+              before: function(xhr) {
+                // 可阻止图片上传
+                return true;
+              },
+              // 图片上传并返回了结果，图片插入已成功
+              success: function(xhr) {
+                console.log('success', xhr)
+              },
+              // 图片上传并返回了结果，但图片插入时出错了
+              fail: function(xhr, editor, resData) {
+                console.log('fail', resData)
+              },
+              // 上传图片出错，一般为 http 请求的错误
+              error: function(xhr, editor, resData) {
+                console.log('error', xhr, resData)
+              },
+              // 上传图片超时
+              timeout: function(xhr) {
+                console.log('timeout')
+              },
+              // 图片上传并返回了结果，想要自己把图片插入到编辑器中
+              // 例如服务器端返回的不是 { errno: 0, data: [...] } 这种格式，可使用 customInsert
+              customInsert: function(insertImgFn, result) {
+                // result 即服务端返回的接口
+                insertImgFn(result.data)
+              }
+            };
+
+            that.editor.config.onchange = function (newHtml) {
+            }
+            // 配置触发 onchange 的时间频率，默认为 200ms
+            that.editor.config.onchangeTimeout = 3000 // 修改为 500ms
+            // 设置编辑区域高度为 500px
+            that.editor.config.height =  560;
+            that.editor.create()
+            callback && callback();
+          },
+          </#if>
+          <#if isCategory==1>
+          // 初始化分类
+          ,initCategory:function(){
+            var that = this;
+            axios.post("/admin/${model}category/load",{}).then(function(res){
+              if(res.data.code == 200){
+                that.rootCategory = res.data.data.records;
+              }
+            })
+          }
+
+          // 选中分类
+          ,selectCategory:function(index){
+            var category = this.rootCategory[index];
+            this.${model}.categoryid = category.id;
+            this.${model}.categoryname = category.title;
+          }
+
+          // 展开分类
+          ,expandCategory:function(){
+            this.expand = !this.expand;
+          }
+          </#if>
+        }
+      });
+
+      <#if isUpload==1>
+      // 文件上传
+      function submit2(id, fieldname) {
+        var type = "file";          //后台接收时需要的参数名称，自定义即可
+        var formData = new FormData();
+        var file = document.getElementById(id);
+        formData.append(type, file.files[0]);    //生成一对表单属性
+        axios.post("/admin/upload",formData).then(function(res){
+          ${model}vue.${model}[fieldname] = res.data.data;
+        })
+      }
+      </#if>
+  </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<template>
+  <main class="pug-pro-basicLayout-content pug-pro-basicLayout-has-header">
+    <div class="pug-pro-page-container">
+      <div class="pug-pro-page-container-warp">
+        <div class="pug-page-header has-breadcrumb">
+          <div class="pug-page-header-heading">
+            <div class="pug-page-header-heading-left">
+              <span class="pug-page-header-heading-title" title="分步表单">{{ opid ? '修改产品' : "添加产品" }}</span>
+              编辑的id是:{{ opid }}
+            </div>
+          </div>
+          <div class="pug-page-header-content">
+            <div class="pug-pro-page-container-detail">
+              <div class="pug-pro-page-container-main">
+                <div class="pug-pro-page-container-row">
+                  <div class="pug-pro-page-container-content">
+                    ${title}页用于向用户收集或验证信息，分步${title}常见于数据项较多的表单场景。
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pug-pro-grid-content">
+        <div class="pug-pro-grid-content-children">
+          <div class="pug-pro-layout-watermark-wrapper" style="position: relative;">
+            <div class="pug-pro-page-container-children-content">
+              <#if !isSingle>
+              <div class="pug-card">
+                <div class="pug-pro-steps-form-steps-container" style="max-width: 760px;padding: 20px 0">
+                  <div class="pug-steps pug-steps-horizontal pug-steps-label-horizontal">
+                    <div class="pug-steps-item" @click="next(1)"
+                         :class="[currentStep>=1?'pug-steps-item-process pug-steps-item-active':'']">
+                      <div class="pug-steps-item-container">
+                        <div class="pug-steps-item-tail"></div>
+                        <div class="pug-steps-item-icon"><span class="pug-steps-icon">1</span></div>
+                        <div class="pug-steps-item-content">
+                          <div class="pug-steps-item-title">基本信息</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pug-steps-item pug-steps-item-wait" @click="next(2)"
+                         :class="[currentStep>=2?'pug-steps-item-process pug-steps-item-active':'']">
+                      <div class="pug-steps-item-container">
+                        <div class="pug-steps-item-tail"></div>
+                        <div class="pug-steps-item-icon"><span class="pug-steps-icon">2</span></div>
+                        <div class="pug-steps-item-content">
+                          <div class="pug-steps-item-title">明细控制</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pug-steps-item pug-steps-item-wait" @click="next(3)"
+                         :class="[currentStep>=3?'pug-steps-item-process pug-steps-item-active':'']">
+                      <div class="pug-steps-item-container">
+                        <div class="pug-steps-item-tail"></div>
+                        <div class="pug-steps-item-icon"><span class="pug-steps-icon">3</span></div>
+                        <div class="pug-steps-item-content">
+                          <div class="pug-steps-item-title">价格控制</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pug-steps-item pug-steps-item-wait" @click="next(4)"
+                         :class="[currentStep>=4?'pug-steps-item-process pug-steps-item-active':'']">
+                      <div class="pug-steps-item-container">
+                        <div class="pug-steps-item-tail"></div>
+                        <div class="pug-steps-item-icon"><span class="pug-steps-icon">4</span></div>
+                        <div class="pug-steps-item-content">
+                          <div class="pug-steps-item-title">产品描述</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pug-steps-item pug-steps-item-wait" @click="next(5)"
+                         :class="[currentStep>=5?'pug-steps-item-process pug-steps-item-active':'']">
+                      <div class="pug-steps-item-container">
+                        <div class="pug-steps-item-tail"></div>
+                        <div class="pug-steps-item-icon"><span class="pug-steps-icon">5</span></div>
+                        <div class="pug-steps-item-content">
+                          <div class="pug-steps-item-title">发布完成</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div></#if>
+              <div v-show="currentStep==1" class="pug-card mt20">
+                <div class="pug-card-body">
+                  <div class="pug-debug-result">{{${model}}}</div>
+                  <div class="pug-row" style="justify-content: center">
+                      <#list tableInfos as data><#if data.name == 'img' || data.name == 'bigpic' || data.name == 'thumb' ||  data.name?index_of('image')!=-1>
+                      <div class="pug-col   pug-col-lg-3" style="padding-left: 8px; padding-right: 8px;">
+                      <pug-upload @callback="uploadSuccess" modal="2" cref="${data.name}" uploadname="${data.name}"  v-model="${model}.${data.name}"></pug-upload>
+                      <div style="display: none;"><pug-input ${data.null?string('','required')} placeholder="请输入${data.comment}" cref="${data.name}"  v-model="${model}.${data.name}" type="text"></pug-input></div>
+                      </div></#if></#list>
+                    <div class="pug-col pug-col-lg-8" style="padding:0 30px;">
+                      <div autocomplete="off" class="pug-form pug-form-vertical pug-form-hide-required-mark">
+                         <#list tableInfos as data>
+                         <#if !data.date && data.name != 'img' && data.name != 'bigpic' && data.name != 'thumb' &&  data.name?index_of('image')==-1>
+                         <#if data.primarkey>
+                         <input type="hidden" v-model="${model}.${data.name}" cref="${data.name}"/>
+                         <#else>
+                         <div class="pug-row pug-form-item" style="row-gap: 0px;">
+                          <div class="pug-col pug-form-item-label">
+                             <label class="pug-form-item-required" title="${data.comment}">${data.comment}
+                                <#if data.name?index_of('title')!=-1 || data.name?index_of('name')!=-1
+                                    || data.name?index_of('content')!=-1
+                                    || data.name?index_of('category')!=-1
+                                    || data.name?index_of('url')!=-1
+                                    || data.name?index_of('href')!=-1
+                                    || data.name?index_of('desc')!=-1
+                                    || data.name?index_of('time')!=-1
+                                    || data.name?index_of('sort')!=-1
+                                    || data.name?index_of('price')!=-1
+                                 >
+                                <span class='pug-valid-label'>(*必填)</span>
+                                </#if>
+                             </label>
+                          </div>
+                          <div class="pug-col pug-form-item-control">
+                            <div class="pug-form-item-control-input">
+                             <div class="pug-form-item-control-input-content">
+                              <#if data.name?index_of('avatar')!=-1 || data.name?index_of('icon')!=-1>
+                              <div class="pug-form-item-control-input-content">
+                                <span class="pug-input-affix-wrapper pro-field pro-field-md">
+                                    <input  placeholder="请上传${data.comment}" id="${data.name}" class="pug-input" type="text" v-model="${model}.${data.name}"/>
+                                    <pug-upload @callback="uploadSuccess" cref="${data.name}" v-model="${model}.${data.name}"></pug-upload>
+                                </span>
+                              </div>
+                              <#elseif data.dbType?index_of('text')!=-1 || data.dbType?index_of('longtext')!=-1 || data.name?index_of('content')!=-1>
+                              <pug-editor :cheight="500" placeholder="请输入${data.comment}" target="${data.name}" v-model="${model}.${data.name}"></pug-editor>
+                              <#elseif data.dbType?index_of('datetime')!=-1 || data.dbType?index_of('date')!=-1  || data.column?index_of('time')!=-1 || data.column?index_of('date')!=-1 >
+                              <div class="pug-picker pug-picker-range pro-field pro-field-md">
+                                  <div class="pug-picker-input pug-picker-input-active">
+                                      <input readonly="" placeholder="${data.comment}" cref="${data.name}" size="12" @click="timeshowevent${data.name}" autocomplete="off" v-model="${model}.${data.name}"/>
+                                  </div>
+                                  <span class="pug-picker-suffix"><span aria-label="calendar" class="anticon anticon-calendar"><svg viewbox="64 64 896 896" focusable="false" data-icon="calendar" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"></path></svg></span></span>
+                                  <pug-calendar @callback="timecallback${data.name}" v-show="timeshow${data.name}" target="${data.name}" v-model="${model}.${data.name}"></pug-calendar>
+                              </div>
+                              <#elseif (data.name?index_of('status')!=-1  || (data.dbType?index_of('int')!=-1 && data.clen=='1') ) && data.name?index_of('delete')==-1 >
+                              <pug-radio v-model="${model}.${data.name}" cref="${data.name}" :items='[{text:"是",value:1},{text:"否",value:0}]' :is-value="false"></pug-radio>
+                              <#elseif  data.name?index_of('delete')!=-1 >
+                              <pug-radio v-model="${model}.${data.name}" cref="${data.name}" :items='[{text:"不删除",value:0},{text:"删除",value:1}]' :is-value="false"></pug-radio>
+                              <#elseif data.name?index_of('hobbys')!=-1>
+                              <pug-checkbox v-model="${model}.${data.name}" cref="${data.name}" :is-value="false"></pug-checkbox>
+                              <#elseif data.name?index_of('category')!=-1 || data.name?index_of('cid')!=-1>
+                              <pug-select showtext="请选择${data.comment}" cref="${data.name}" :items="citems" v-model="${model}.${data.name}"></pug-select>
+                              <#elseif data.name?index_of('desc')!=-1 || data.name?index_of('detail')!=-1 || data.name?index_of('intro')!=-1>
+                              <textarea rows="4" placeholder="请输入${data.comment}" id="${data.name}" v-model="${model}.${data.name}" maxlength="${data.clen}" class="pug-input pro-field pro-field-xl"></textarea>
+                              <#else>
+                                 <pug-input ${data.null?string('','required')} placeholder="请输入${data.comment}" cref="${data.name}" maxlen="${data.clen}"  v-model="${model}.${data.name}" type="text"></pug-input>
+                              </#if>
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+                        </#if>
+                        </#if>
+                        </#list>
+                        <!--保存和下一步按钮-->
+                        <div class="pug-space pug-space-horizontal pug-space-align-center"
+                             style="flex-wrap: wrap; gap: 8px;">
+                          <div class="pug-space-item" style="">
+                             <router-link to="/${model}"><button  class="pug-btn pug-btn-primary mr10"><span><i class="iconfont icon-icon_arrow_left pr3 fz13"></i>返回</span></button></router-link>
+                             <button type="button" v-if="!${model}.id" class="pug-btn pug-btn-primary mr3" @click="saveorupdate()"><span><i class="iconfont icon-tianjia pr3"></i>保存</span></button>
+                             <button type="button" v-if="${model}.id" class="pug-btn pug-btn-primary mr3" @click="saveorupdate()"><span><i class="iconfont icon-quanbudingdan pr3"></i>编辑</span></button>
+                           </div>
+                          <#if !isSingle>
+                          <div class="pug-space-item" style="">
+                            <button type="button" class="pug-btn" @click="next(2)"><span>下一步</span>
+                            </button>
+                          </div>
+                          </#if>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+             <#if !isSingle>
+             <div v-show="currentStep==2" class="pug-card mt20">
+              2
+             </div>
+             <div v-show="currentStep==3" class="pug-card mt20">
+              3
+             </div>
+             <div v-show="currentStep==4" class="pug-card mt20">
+              4
+             </div>
+             <div v-show="currentStep==5" class="pug-card mt20">
+               5
+             </div>
+             </#if>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+</main>
+</template>
+<script>
+import ${model}Service from '@/services/${model}'<#if isCategory>
+import categoryService from '@/services/${model}category'</#if>
+import pugDialog from "@/plugins/PugDialog";
+import pugMessage from "@/plugins/PugMessage";
+import {isEmpty,getById} from "@/utils/validate";
+import cache from "@/utils/cache"
+export default {
+  name: "${beanModel}Add.vue",
+  components: {},
+  data() {
+    return {
+      opid: "",
+      <#list tableInfos as data>
+      <#if !data.date && !data.primarkey>
+      <#if data.dbType?index_of('datetime')!=-1 || data.dbType?index_of('date')!=-1  || data.column?index_of('time')!=-1 || data.column?index_of('date')!=-1 >
+      timeshow${data.name}:false,
+      </#if>
+      </#if>
+      </#list>
+      ${model}:{
+        <#list tableInfos as data>
+        <#if !data.date>
+        <#if  data.name?index_of('delete')!=-1>
+        ${data.name}:0 <#if data_index!=tableInfos?size-1>,</#if> // ${data.comment}
+        <#elseif data.name?index_of('status')!=-1>
+        ${data.name}:1 <#if data_index!=tableInfos?size-1>,</#if> // ${data.comment}
+        <#elseif data.name?index_of('sort')!=-1>
+        ${data.name}:1 <#if data_index!=tableInfos?size-1>,</#if> // ${data.comment}
+        <#elseif data.name?index_of('pid')!=-1 || data.name?index_of('parent')!=-1>
+        ${data.name}:0 <#if data_index!=tableInfos?size-1>,</#if> // ${data.comment}
+        <#else>
+        ${data.name}:""<#if data_index!=tableInfos?size-1>,</#if> // ${data.comment}
+        </#if>
+        </#if>
+        </#list>
+      },
+      <#if  isCategory>
+      citems: [{text:"请选择",value:""}], // 装载数据的分类的</#if>
+      currentStep: 1,<#if !isSingle>
+      steps: [1, 2, 3]</#if>
+    }
+  },
+
+  created() {
+    <#if isCategory>this.loadCategoires();</#if>
+    // 根据id${title}明细
+    if(!isEmpty(this.$route.params.id)){
+      <#list tableInfos as data><#if data.primarkey>this.${model}.${data.name} = this.$route.params.${data.name};</#if></#list>
+      <#list tableInfos as data><#if data.primarkey>this.opid = this.$route.params.${data.name};</#if></#list>
+      // 加载明细
+      this.getDetail();
+    }else{
+      if(isNotEmpty(cache.local.get("${model}_save"))) {
+        this.${model} = cache.local.getJSON("${model}_save")
+      }
+    }
+  },
+
+   watch:{
+      ${model}:{
+        deep:true,
+        handler(val){
+          cache.local.setJSON("${model}_save",val);
+        }
+      }
+   },
+
+  methods: {
+
+    // 加载明细
+    async getDetail(){
+      try{
+        const res = await  ${model}Service.get${beanModel}(this.opid);
+        this.${model} = res.data;
+      }catch (err) {
+        pugMessage.error("服务器异常,代号：1025");
+      }
+    },
+
+    // 1: 保存方法
+    async saveorupdate() {
+        try{
+            // 校验
+            const vresult = await this.validator();
+            if(!vresult){
+                return;
+            }
+
+            pugDialog.confirm('提示',"你确定进行【"+(this.${model}.id?'更新':'保存')+"】吗？").then(async ()=>{
+                // 执行服务器数据保存${title}
+                const res = await  ${model}Service.saveUpdate${beanModel}(this.${model});
+                if(res.status == 200){
+                    if(isEmpty(this.${model}.id)){
+                        // 重置数据
+                        this.reset();
+                        cache.local.remove("${model}_save");
+                        // 返回列表
+                        pugMessage.success("添加成功");
+                        this.$router.push("/${model}/list");
+                    }else{
+                        cache.local.remove("${model}_save");
+                        // 返回列表
+                        pugMessage.success("修改成功");
+                        this.$router.push("/${model}/list");
+                    }
+                }
+            })
+        }catch(err){
+            pugMessage.error("服务器异常,代号：1025");
+        }
+    },
+
+    // 2: 校验
+    async validator(){
+
+        <#list tableInfos as data>
+        <#if !data.date && !data.primarkey>
+        if(isEmpty(this.${model}.${data.name})){
+           pugMessage.error("请输入${data.comment}");
+           getById('${data.name}').focus();
+           return false;
+        }
+
+        </#if>
+        </#list>
+        return true;
+    },
+
+    <#if !isSingle>
+    // 3: 步骤分解
+    prev(index) {
+      this.currentStep = index;
+    },
+
+    next(index) {
+      this.currentStep = index;
+    },
+    </#if>
+
+    // 4: 文件上传回调
+    uploadSuccess(response) {
+      console.log("uploadSuccess:", response)
+    },
+
+    // 5: 重置数据
+    reset(){
+        this.${model} = {
+         citems: [{text:"请选择",value:""}],
+         <#list tableInfos as data>
+         <#if !data.date>
+         ${data.name}:""<#if data_index!=tableInfos?size-1>,</#if> // ${data.comment}
+         </#if>
+         </#list>
+       }
+    },
+
+    <#list tableInfos as data>
+    <#if !data.date && !data.primarkey>
+    <#if data.dbType?index_of('datetime')!=-1 || data.dbType?index_of('date')!=-1  || data.column?index_of('time')!=-1 || data.column?index_of('date')!=-1 >
+    timecallback${data.name}() {
+      this.timeshow${data.name} = false;
+    },
+
+    timeshowevent${data.name}() {
+      this.timeshow${data.name} = true;
+    },
+    </#if>
+    </#if>
+    </#list>
+
+    <#if isCategory>
+    // 加载分类
+    loadCategoires() {
+      categoryService.find${beanModel}CategoryList().then(res => {
+        var items = res.data;
+        this.citems = this.citems.concat(items.map(item=>({text:item.name,value:item.id})));
+      })
+    }
+    </#if>
+  }
+}
+</script>
+<style scoped="">
+</style>

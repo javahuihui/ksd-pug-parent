@@ -1,0 +1,23 @@
+package ${packagename};
+
+@TableName("${tablename}")
+public class ${model}{
+
+    // ${kuohao2('user.id')}
+
+    <#list fields as field>
+    // ${field.comment}
+    private ${field.ctype} ${field.name};
+    </#list>
+
+    <#list fields as field>
+    public void set${field.hname}(${field.ctype} ${field.name}){
+        this.${field.name} = ${field.name};
+    }
+
+    public ${field.ctype} get${field.hname}(){
+        return this.${field.name};
+    }
+    </#list>
+
+}

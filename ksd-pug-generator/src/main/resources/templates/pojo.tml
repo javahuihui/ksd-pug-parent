@@ -1,0 +1,43 @@
+package ${packagename};
+
+import java.util.Date;
+import lombok.*;
+import com.baomidou.mybatisplus.annotation.*;
+<#if istree && istreecount>import java.util.List;</#if>
+
+/**
+ * ${beanModel}实体
+ * 创建人:${author}<br/>
+ * 时间：${datetime} <br/>
+ * 源码下载：${gitlink}
+ * 飞哥B站地址：${burl}
+ * @version ${version}<br/>
+ *
+*/
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@TableName("${tablename}")
+public class ${beanModel}  implements java.io.Serializable {
+
+	<#list fields as data>
+    // ${data.comment}
+    <#if data.primarkey && data.ctype=="Long">
+    @TableId(type = IdType.ASSIGN_ID)
+    </#if>
+    <#if data.primarkey && data.ctype=="Integer">
+    @TableId(type = IdType.AUTO)
+    </#if>
+    <#if data.date>
+    @TableField(fill = ${(data.name=='createTime')?string('FieldFill.INSERT','FieldFill.INSERT_UPDATE')})
+    </#if>
+    private ${data.ctype} ${data.name};
+    </#list>
+    <#if istree && istreecount>
+    // 子集
+    @TableField(exist = false)
+    private List<${beanModel}> childrens;
+    </#if>
+
+}

@@ -1,0 +1,57 @@
+import request from '@/utils/request';
+
+/**
+ * @author ${author}
+ * @date: ${datetime}
+ * @desc: ${title}模块业务
+ * @version：${version}
+ */
+export default {
+
+  // 1: 查询$搜索&分页${title}
+  find${beanModel}Page(${model}Vo = {pageNo: 1, pageSize: 10}) {
+    return request.post("${model}/list", ${model}Vo);
+  },
+
+  // 2: 查询${title}列表
+  find${beanModel}List() {
+    return request.get("${model}/load");
+  },
+
+  // 3: 保存&修改${title}
+  saveUpdate${beanModel}(${model} = {}) {
+    return request.post("${model}/saveupdate", ${model});
+  },
+
+  // 4: 根据id删除${title}
+  del${beanModel}(id) {
+    if (!id) {
+      return;
+    }
+    return request.post("${model}/delete/" + id);
+  },
+
+  // 5: 批量删除${title}
+  delBatch${beanModel}(batchIds) {
+    if (!batchIds) {
+      return;
+    }
+    return request.post("${model}/delBatch", {batchIds});
+  },
+
+  // 6: 根据id查询${title}明细
+  get${beanModel}(id) {
+    if (!id) {
+      return;
+    }
+    return request.get("${model}/get/" + id);
+  },
+
+ <#if istree>
+  //7 加载树形菜单数据
+  loadTree(){
+     return request.get("${model}/tree");
+  },
+  </#if>
+
+}

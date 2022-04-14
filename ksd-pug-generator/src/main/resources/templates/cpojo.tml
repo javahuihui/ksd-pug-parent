@@ -1,0 +1,40 @@
+package ${entityPackage};
+
+import java.util.Date;
+import lombok.*;
+import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+
+
+/**
+ *  ${beanModel}实体
+ * 创建人:${author}<br/>
+ * 时间：${datetime} <br/>
+ * 源码下载：${gitlink}
+ * 飞哥B站地址：${burl}
+ * @version ${version}<br/>
+ *
+*/
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@TableName("${tablename}")
+public class ${beanModel} extends Model<${beanModel}> implements java.io.Serializable {
+	<#list fields as data>
+	<#if data.name!='uuid' && data.name!='version' && data.name!='createTime' && data.name!='updateTime'>
+    // ${data.comment}
+    <#if data.name=='id'>
+    @TableId(type = IdType.ID_WORKER)
+    </#if>
+	private ${data.ctype} ${data.name};
+    </#if>
+    </#list>
+    // 创建时间
+    @TableField(fill = FieldFill.INSERT)//在新增的时候填充
+    private Date createTime;
+    // 更新时间 
+    @TableField(fill = FieldFill.INSERT_UPDATE)//在新增的时候填充
+    private Date updateTime;
+}

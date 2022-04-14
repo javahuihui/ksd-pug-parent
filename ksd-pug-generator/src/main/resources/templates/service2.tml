@@ -1,0 +1,99 @@
+package ${packagename};
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
+import ${entityPackage}.${beanModel};
+import ${voPackage}.${beanModel}Vo;
+import java.util.List;
+
+/**
+ * I${beanModel}Service接口
+ * 创建人:${author}<br/>
+ * 时间：${datetime} <br/>
+ * 源码下载：${gitlink}
+ * 飞哥B站地址：${burl}
+ * @version ${version}<br/>
+ *
+*/
+public interface I${beanModel}Service extends IService<${beanModel}>{
+
+    <#if istree && istreecount>
+     /**
+     * 返回分类tree
+     * @return List<${beanModel}>
+     */
+    List<${beanModel}> find${beanModel}Tree();
+    </#if>
+
+    /**
+     * 查询${title}列表信息
+     * @method: find${beanModel}List
+     * @result : List<${beanModel}>
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version 1.0.0
+     * @return
+     */
+    List<${beanModel}> find${beanModel}List() ;
+
+	/**
+     * 查询${title}列表信息并分页
+     * 方法名：find${beanModel}s<br/>
+     * 创建人：${author} <br/>
+     * 时间：${datetime}<br/>
+     * @param ${model}Vo
+     * @return IPage<${beanModel}><br />
+     * @throws <br/>
+     * @since ${version}<br />
+    */
+	IPage<${beanModel}> find${beanModel}Page(${beanModel}Vo ${model}Vo);
+
+    /**
+     * 保存&修改${title}
+     * 方法名：saveupdate${beanModel}<br/>
+     * 创建人：${author} <br/>
+     * 时间：${datetime}<br/>
+     * @param ${model} 
+     * @return ${beanModel}<br />
+     * @throws <br/>
+     * @since ${version}<br />
+    */
+    ${beanModel} saveupdate${beanModel}(${beanModel} ${model});
+
+    /**
+     * 根据Id删除${title}
+     * 方法名：delete${beanModel}ById<br/>
+     * 创建人：${author} <br/>
+     * 时间：${datetime}<br/>
+     * @param id
+     * @return int <br />
+     * @throws <br/>
+     * @since ${version}<br />
+     */
+    int delete${beanModel}ById(Long id) ;
+
+    /**
+     * 根据Id查询${title}明细信息
+     * 方法名：get${beanModel}ById<br/>
+     * 创建人：${author} <br/>
+     * 时间：${datetime}<br/>
+     * @param id
+     * @return ${beanModel} <br />
+     * @throws <br/>
+     * @since ${version}<br />
+    */
+    ${beanModel} get${beanModel}ById(Long id);
+
+    /**
+     * 根据${title}ids批量删除${title}
+     * 方法名：delBatch${beanModel}<br/>
+     * 创建人：${author} <br/>
+     * 时间：${datetime}<br/>
+     * @param ids
+     * @return boolean <br />
+     * @throws <br/>
+     * @since ${version}<br />
+    */
+    boolean delBatch${beanModel}(String ids);
+
+}

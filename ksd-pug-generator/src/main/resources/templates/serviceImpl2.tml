@@ -1,0 +1,211 @@
+package ${packagename};
+
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${mapperPackage}.${beanModel}Mapper;
+import ${entityPackage}.${beanModel};
+import ${voPackage}.${beanModel}Vo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import ${rootPackage}.commons.enums.ResultStatusEnumA;
+import ${rootPackage}.commons.ex.PugValidationException;
+import ${rootPackage}.commons.utils.fn.asserts.Vsserts;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+/**
+ * ${beanModel}ServiceImpl实现类
+ * 创建人:${author}<br/>
+ * 时间：${datetime} <br/>
+ * 源码下载：${gitlink}
+ * 飞哥B站地址：${burl}
+ * @version ${version}<br/>
+ *
+*/
+@Service
+@Slf4j
+public class ${beanModel}ServiceImpl extends ServiceImpl<${beanModel}Mapper,${beanModel}> implements I${beanModel}Service  {
+
+    /**
+     * 查询分页&搜索${title}
+     * @param ${model}Vo
+     * @return IPage<${beanModel}>
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version ${version}
+     */
+    @Override
+	public IPage<${beanModel}> find${beanModel}Page(${beanModel}Vo ${model}Vo){
+	    // 设置分页信息
+		Page<${beanModel}> page = new Page<>(${model}Vo.getPageNo(),${model}Vo.getPageSize());
+		// 设置查询条件
+        LambdaQueryWrapper<${beanModel}> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // lambdaQueryWrapper.select(${beanModel}.class, column -> !column.getColumn().equals("description"));
+        <#list fields as data>
+        <#if data.name?index_of("name")!=-1>
+        // 根据关键词搜索信息
+        lambdaQueryWrapper.like(Vsserts.isNotEmpty(${model}Vo.getKeyword()), ${beanModel}::get${data.hname},${model}Vo.getKeyword());
+        <#elseif data.name?index_of("title")!=-1>
+        // 根据关键词搜索信息
+        lambdaQueryWrapper.like(Vsserts.isNotEmpty(${model}Vo.getKeyword()), ${beanModel}::get${data.hname},${model}Vo.getKeyword());
+        <#elseif data.name?index_of("cid")!=-1 || data.name?index_of("category")!=-1>
+        // 根据分类查询
+        lambdaQueryWrapper.eq(Vsserts.isNotNull(${model}Vo.getCategoryId()), ${beanModel}::get${data.hname},${model}Vo.getCategoryId());
+        <#elseif data.name?index_of("status")!=-1>
+         //查询发布的 0 未发布  1 发布
+        lambdaQueryWrapper.eq(${model}Vo.getStatus() != null ,${beanModel}::get${data.hname},${model}Vo.getStatus());
+        </#if>
+        </#list>
+        // 多列搜索
+        // lambdaQueryWrapper.and(Vsserts.isNotEmpty(${model}Vo.getKeyword()),wrapper -> wrapper
+        //         .like(${beanModel}::getName, ${model}Vo.getKeyword())
+        //         .or()
+        //         .like(${beanModel}::getCategoryName, ${model}Vo.getKeyword())
+        // );
+        // 根据时间排降序
+        lambdaQueryWrapper.orderByDesc(${beanModel}::getCreateTime);
+        // 查询分页返回
+		IPage<${beanModel}> results = this.page(page,lambdaQueryWrapper);
+		return results;
+	}
+
+    /**
+     * 查询${title}列表信息
+     * @method: find${beanModel}List
+     * @result : List<${beanModel}>
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version 1.0.0
+     * @return
+    */
+    @Override
+    public List<${beanModel}> find${beanModel}List() {
+     	// 1：设置查询条件
+        LambdaQueryWrapper<${beanModel}> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 2：查询发布的 0 未发布  1 发布
+        lambdaQueryWrapper.eq(${beanModel}::getStatus,1);
+        lambdaQueryWrapper.eq(${beanModel}::getIsdelete,0);
+        // 3: 查询返回
+        return this.list(lambdaQueryWrapper);
+    }
+
+	/**
+     * 根据id查询${title}明细信息
+     * @param id
+     * @return ${beanModel}
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version ${version}
+     */
+    @Override
+    public ${beanModel} get${beanModel}ById(Long id) {
+        return this.getById(id);
+    }
+
+
+    /**
+     * 保存&修改${title}
+     * @param ${model}
+     * @return ${beanModel}
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version ${version}
+     */
+    @Override
+	public ${beanModel} saveupdate${beanModel}(${beanModel} ${model}){
+		boolean flag = this.saveOrUpdate(${model});
+		return flag ? ${model} : null;
+	}
+
+
+    /**
+     * 根据id删除${title}
+     * @param id
+     * @return int
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version ${version}
+     */
+    @Override
+    public int delete${beanModel}ById(Long id) {
+        boolean b = this.removeById(id);
+        return b ? 1 : 0;
+    }
+
+    /**
+     * 根据id删除
+     * @param ids
+     * @return boolean
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version ${version}
+     */
+    @Override
+    public boolean delBatch${beanModel}(String ids) {
+        try {
+            // 1 : 把数据分割
+            String[] strings = ids.split(",");
+            // 2: 组装成一个List<${beanModel}>
+            List<${beanModel}> ${model}List = Arrays.stream(strings).map(idstr -> {
+                ${beanModel} ${model} = new ${beanModel}();
+                ${model}.setId(new Long(idstr));
+                ${model}.setIsdelete(1);
+                return ${model};
+            }).collect(Collectors.toList());
+            // 3: 批量删除
+            return this.updateBatchById(${model}List);
+        } catch (Exception ex) {
+            throw new PugValidationException(ResultStatusEnumA.SERVER_DB_ERROR);
+        }
+    }
+
+
+   <#if istree && istreecount>
+   /**
+    * 递归获取分类形成tree级菜单
+    * @return
+    * 创建人:${author}
+    * 创建时间：${datetime}
+    * @version ${version}
+    */
+    @Override
+    public List<${beanModel}> find${beanModel}Tree() {
+        LambdaQueryWrapper<${beanModel}> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(${beanModel}::getStatus,1);
+        // 1 :查询表中所有的数据
+        List<${beanModel}> allList = this.list(lambdaQueryWrapper); // 思考空间，为什么查询的是所有
+        // 2: 找到所有的根节点 pid = 0
+        List<${beanModel}> rootList = allList.stream().filter(category -> category.getPid().equals(0L))
+                .sorted((a, b) -> a.getSorted() - b.getSorted()).collect(Collectors.toList());
+        // 3 : 查询所有的非根节点
+        List<${beanModel}> subList = allList.stream().filter(category -> !category.getPid().equals(0L)).collect(Collectors.toList());
+        // 4 : 循环根节点去subList去找对应的子节点
+        rootList.forEach(root -> buckForback(root, subList));
+
+        return rootList;
+    }
+
+
+    private void buckForback(${beanModel} root, List<${beanModel}> subList) {
+        // 通过根节点去id和子节点的pid是否相等，如果相等的话，代表是当前根的子集
+        List<${beanModel}> childrenList = subList.stream().filter(category -> category.getPid().equals(root.getId()))
+                .sorted((a, b) -> a.getSorted() - b.getSorted())
+                .collect(Collectors.toList());
+        // 如果你当前没一个子集，初始化一个空数组
+        if (!CollectionUtils.isEmpty(childrenList)) {
+            // 查询以后放回去
+            root.setChildrens(childrenList);
+            // 再次递归构建即可 
+            childrenList.forEach(category -> buckForback(category, subList));
+        } else {
+            root.setChildrens(new ArrayList<>());
+        }
+    }
+    </#if>
+}

@@ -1,0 +1,46 @@
+server:
+  port: 8081
+
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/testpdman?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      connection-timeout: 60000 # 连接的超时时长单位是（毫秒），超过这个时长还没有可用的连接就发生SQLException 默认是：30秒
+      validation-timeout: 10000 # 每隔多久去校验一次连接是否有效
+      idle-timeout: 60000 # 连接超时的生命时长（毫秒）超时而且没有使用则被释放。默认是10分钟
+      max-lifetime: 60000 # 连接的生命时长（毫秒），超时而且没有被使用则被释放，默认是30分钟
+      maximum-pool-size: 20 # 最大连接数 当前cpu核数 * 2
+      minimum-idle: 20 # 最小连接数
+      auto-commit: true # 自动提交
+      connection-test-query: select 1
+      pool-name: DatasourceHikariPc
+
+# mybatis自身的配置和mp和tk无关
+mybatis:
+  configuration:
+    # 建议dev开启，因为看到sql执行过程
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # mapper.xml存储的位置默认  classpath*:/mapper/*.xml 可以不配置，配置的目的就是告诉你可以修改
+  mapper-locations: classpath*:/mapper/*.xml
+  # 包别名的配置，但是配置不使用，要么就删掉
+  type-aliases-package: com.ksd.pug.pojo
+
+# 配置通用tk-mybatis
+mapper:
+  mappers: com.pug.baseMapper.BaseMapper
+  not-empty: false
+  identity: MYSQL
+
+#分页pageHelper
+pagehelper:
+  # 一定要配置断言 配置使用哪种数据库语言，不配置的话pageHelper也会自动检测
+  helper-dialect: mysql
+  # 配置分页参数合理化功能，默认是false。 #启用合理化时，如果pageNum<1会查询第一页，如果pageNum>总页数会查询最后一页； #禁用合理化时，如果pageNum<1或pageNum>总页数会返回空数据。
+  reasonable: true
+  # 支持通过Mapper接口参数来传递分页参数，默认值false，分页插件会从查询方法的参数值中，自动根据上面 params 配置的字段中取值，查找到合适的值时就会自动分页。
+  support-methods-arguments: trued

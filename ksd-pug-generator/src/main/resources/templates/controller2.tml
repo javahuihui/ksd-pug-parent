@@ -1,0 +1,149 @@
+package ${packagename};
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import ${servicePackage}.${model}.I${beanModel}Service;
+import ${entityPackage}.${beanModel};
+import ${voPackage}.${beanModel}Vo;
+import ${rootPackage}.commons.enums.ResultStatusEnumA;
+import ${rootPackage}.commons.ex.PugValidationException;
+import ${rootPackage}.commons.utils.fn.asserts.Vsserts;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import ${rootPackage}.controller.BaseController;
+import java.util.List;
+
+/**
+ * ${beanModel}Controller
+ * 创建人:${author}<br/>
+ * 时间：${datetime} <br/>
+ * 源码下载：${gitlink}
+ * 飞哥B站地址：${burl}
+ * @version ${version}<br/>
+ *
+*/
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+public class ${beanModel}Controller extends BaseController{
+
+    private final I${beanModel}Service ${model}Service;
+
+    <#if istree && istreecount>
+    /**
+     * 查询${title}的接口信息-tree
+     *
+     * @return
+     */
+    @GetMapping("/${model}/tree")
+    public List<${beanModel}> tree() {
+        return ${model}Service.find${beanModel}Tree();
+    }
+    </#if>
+
+    /**
+     * 查询${title}列表信息
+     * @path : /admin/${model}/load
+     * @method: find${beanModel}s
+     * @result : List<${beanModel}>
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version 1.0.0
+     * @return
+     */
+    @GetMapping("/${model}/load")
+    public List<${beanModel}> find${beanModel}List() {
+        return ${model}Service.find${beanModel}List();
+    }
+
+	/**
+	 * 查询${title}列表信息并分页
+	 * @path : /admin/${model}/list
+     * @method: find${beanModel}s
+     * @param : ${model}Vo
+     * @result : IPage<${beanModel}>
+	 * 创建人:${author}
+	 * 创建时间：${datetime}
+	 * @version 1.0.0
+	*/
+    @PostMapping("/${model}/list")
+    public IPage<${beanModel}> find${beanModel}s(@RequestBody ${beanModel}Vo ${model}Vo) {
+        return ${model}Service.find${beanModel}Page(${model}Vo);
+    }
+
+
+    /**
+     * 根据${title}id查询明细信息
+     * @method: get/{id}
+     * @path : /admin/${model}/get/{id}
+     * @param : id
+     * @result : ${beanModel}
+     * 创建人:${author}
+     * 创建时间：${datetime}
+     * @version 1.0.0
+    */
+    @GetMapping("/${model}/get/{id}")
+    public ${beanModel} get${beanModel}ById(@PathVariable("id") String id) {
+        if(Vsserts.isEmpty(id)){
+           throw new PugValidationException(ResultStatusEnumA.ID_NOT_EMPTY);
+        }
+        return ${model}Service.get${beanModel}ById(new Long(id));
+    }
+
+
+	/**
+	 * 保存和修改${title}
+     * @method: saveupdate
+	 * @path : /admin/${model}/save
+     * @param : ${model}
+     * @result : ${beanModel}
+	 * 创建人:${author}
+	 * 创建时间：${datetime}
+	 * @version 1.0.0
+	*/
+    @PostMapping("/${model}/saveupdate")
+    public ${beanModel} saveupdate${beanModel}(@RequestBody ${beanModel} ${model}) {
+        return ${model}Service.saveupdate${beanModel}(${model});
+    }
+
+
+    /**
+	 * 根据${title}id删除${title}
+     * @method: delete/{id}
+     * @path : /admin/${model}/delete/{id}
+     * @param : id
+     * @result : int
+	 * 创建人:${author}
+	 * 创建时间：${datetime}
+	 * @version 1.0.0
+	*/
+    @PostMapping("/${model}/delete/{id}")
+    public int delete${beanModel}ById(@PathVariable("id") String id) {
+        if(Vsserts.isEmpty(id)){
+            throw new PugValidationException(ResultStatusEnumA.ID_NOT_EMPTY);
+        }
+        return ${model}Service.delete${beanModel}ById(new Long(id));
+    }
+
+
+   /**
+   	 * 根据${title}ids批量删除${title}
+     * @method: ${model}/delBatch
+     * @path : /admin/${model}/delBatch
+     * @param : ${model}Vo
+     * @result : boolean
+   	 * 创建人:${author}
+   	 * 创建时间：${datetime}
+   	 * @version 1.0.0
+   	*/
+    @PostMapping("/${model}/delBatch")
+    public boolean del${beanModel}(@RequestBody ${beanModel}Vo ${model}Vo) {
+        log.info("你要批量删除的IDS是:{}", ${model}Vo.getBatchIds());
+        if (Vsserts.isEmpty(${model}Vo.getBatchIds())) {
+            throw new PugValidationException(ResultStatusEnumA.ID_NOT_EMPTY);
+        }
+        return ${model}Service.delBatch${beanModel}(${model}Vo.getBatchIds());
+    }
+
+}

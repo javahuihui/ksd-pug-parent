@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pug.mapper.SysLoginUserMapper">
+    <!--问：List<SysRole> 为什么可以使用SysRole-->
+    <select id="findSysRoleByUserId" resultType="com.pug.pojo.SysRole">
+       SELECT
+            u.*
+        FROM
+            kss_role_user sru
+        LEFT JOIN kss_role u ON u.id = sru.role_id
+        WHERE
+            sru.user_id = #{userId}
+    </select>
+
+    <select id="findBySysPermissionUserId" resultType="com.pug.pojo.SysPermission">
+        SELECT
+            p.*
+        FROM
+            kss_role_user sru
+                LEFT JOIN kss_role r ON sru.role_id = r.id
+                LEFT JOIN kss_role_permission spr ON spr.role_id = r.id
+                LEFT JOIN kss_permission p ON p.id = spr.permission_id
+        WHERE
+            sru.user_id = #{userId}
+    </select>
+
+
+    <select id="findLoginUserPage" resultType="com.pug.pojo.SysLoginUser">
+        SELECT su.* FROM kss_role_user sru
+        LEFT JOIN kss_user su ON su.id = sru.user_id
+        ${ew.customSqlSegment}
+    </select>
+
+</mapper>

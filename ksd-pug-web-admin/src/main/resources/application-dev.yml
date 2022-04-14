@@ -1,0 +1,50 @@
+server:
+  port: 8081
+
+
+spring:
+
+  redis:
+    host: 139.9.127.11
+    port: 6379
+    database: 0
+    password: hiaudio@2019
+    connect-timeout: 3s
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
+#    locale: zh_CN
+#    generator:
+#      write-numbers-as-strings: true
+#      write-bigdecimal-as-plain: true
+#    serialization:
+#      write-dates-as-timestamps: false
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/ksd-pug-travel?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      connection-timeout: 60000 # 连接的超时时长单位是（毫秒），超过这个时长还没有可用的连接就发生SQLException 默认是：30秒
+      validation-timeout: 10000 # 每隔多久去校验一次连接是否有效
+      idle-timeout: 60000 # 连接超时的生命时长（毫秒）超时而且没有使用则被释放。默认是10分钟
+      max-lifetime: 60000 # 连接的生命时长（毫秒），超时而且没有被使用则被释放，默认是30分钟
+      maximum-pool-size: 20 # 最大连接数 当前cpu核数 * 2
+      minimum-idle: 20 # 最小连接数
+      auto-commit: true # 自动提交
+      read-only: false
+      login-timeout: 5
+
+
+# 本机配置
+file:
+  staticPath: http://localhost:9000
+  staticPatternPath: /upimages/**
+  uploadFolder: F:/tmp/

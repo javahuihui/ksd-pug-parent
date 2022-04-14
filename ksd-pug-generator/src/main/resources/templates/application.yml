@@ -1,0 +1,45 @@
+server:
+  port: ${port}
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ${projectName}
+  servlet:
+    multipart:
+      enabled: true
+      # 是单个文件大小 默认1M 10KB
+      max-file-size: 8MB
+      # 是设置总上传的数据大小
+      max-request-size: 10MB
+      #当文件达到多少时进行磁盘写入
+      file-size-threshold: 20MB
+  freemarker:
+    enabled: true
+    charset: UTF-8 # 模板编码。
+    cache: false  # 启用模板缓存。
+    template-loader-path: classpath:/templates/
+    suffix: .html
+    check-template-location: true # 检查模板位置是否存在。
+    request-context-attribute: request
+    settings:
+      tag_syntax: auto_detect
+      default_encoding: UTF-8
+      output_encoding: UTF-8
+      locale: zh_CN
+      date_format: yyyy-MM-dd
+      time_format: HH:mm:ss
+      boolean_format: true,false
+      whitespace_stripping: true
+      url_escaping_charset: UTF-8
+      datetime_format: yyyy/MM/dd HH:mm:ss
+      number_format: 0.##
+      classic_compatible: true
+      #ignore,debug,html_debug,rethrow
+      template_exception_handler: rethrow
+
+# mybatis-plus配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:/mapper/*.xml

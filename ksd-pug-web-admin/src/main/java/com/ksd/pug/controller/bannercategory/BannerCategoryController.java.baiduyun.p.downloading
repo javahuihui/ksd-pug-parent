@@ -1,0 +1,138 @@
+package com.ksd.pug.controller.bannercategory;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ksd.pug.service.bannercategory.IBannerCategoryService;
+import com.ksd.pug.pojo.BannerCategory;
+import com.ksd.pug.vo.BannerCategoryVo;
+import com.ksd.pug.commons.enums.ResultStatusEnumA;
+import com.ksd.pug.commons.ex.PugValidationException;
+import com.ksd.pug.commons.utils.fn.asserts.Vsserts;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import com.ksd.pug.controller.BaseController;
+import java.util.List;
+
+/**
+ * BannerCategoryController
+ * 创建人:yykk<br/>
+ * 时间：2022-02-20 20:17:40 <br/>
+ * 源码下载：前台代码 git clone https://gitee.com/kekesam/kuangstudy-pug-ui.git
+ * 飞哥B站地址：后台代码 git clone https://gitee.com/kekesam/kuangstudy-pug-parent.git
+ * @version 1.0.0<br/>
+ *
+*/
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+public class BannerCategoryController extends BaseController{
+
+    private final IBannerCategoryService bannercategoryService;
+
+
+    /**
+     * 查询轮播图分类列表信息
+     * @path : /admin/bannercategory/load
+     * @method: findBannerCategorys
+     * @result : List<BannerCategory>
+     * 创建人:yykk
+     * 创建时间：2022-02-20 20:17:40
+     * @version 1.0.0
+     * @return
+     */
+    @GetMapping("/bannercategory/load")
+    public List<BannerCategory> findBannerCategoryList() {
+        return bannercategoryService.findBannerCategoryList();
+    }
+
+	/**
+	 * 查询轮播图分类列表信息并分页
+	 * @path : /admin/bannercategory/list
+     * @method: findBannerCategorys
+     * @param : bannercategoryVo
+     * @result : IPage<BannerCategory>
+	 * 创建人:yykk
+	 * 创建时间：2022-02-20 20:17:40
+	 * @version 1.0.0
+	*/
+    @PostMapping("/bannercategory/list")
+    public IPage<BannerCategory> findBannerCategorys(@RequestBody BannerCategoryVo bannercategoryVo) {
+        return bannercategoryService.findBannerCategoryPage(bannercategoryVo);
+    }
+
+
+    /**
+     * 根据轮播图分类id查询明细信息
+     * @method: get/{id}
+     * @path : /admin/bannercategory/get/{id}
+     * @param : id
+     * @result : BannerCategory
+     * 创建人:yykk
+     * 创建时间：2022-02-20 20:17:40
+     * @version 1.0.0
+    */
+    @GetMapping("/bannercategory/get/{id}")
+    public BannerCategory getBannerCategoryById(@PathVariable("id") String id) {
+        if(Vsserts.isEmpty(id)){
+           throw new PugValidationException(ResultStatusEnumA.ID_NOT_EMPTY);
+        }
+        return bannercategoryService.getBannerCategoryById(new Long(id));
+    }
+
+
+	/**
+	 * 保存和修改轮播图分类
+     * @method: saveupdate
+	 * @path : /admin/bannercategory/save
+     * @param : bannercategory
+     * @result : BannerCategory
+	 * 创建人:yykk
+	 * 创建时间：2022-02-20 20:17:40
+	 * @version 1.0.0
+	*/
+    @PostMapping("/bannercategory/saveupdate")
+    public BannerCategory saveupdateBannerCategory(@RequestBody BannerCategory bannercategory) {
+        return bannercategoryService.saveupdateBannerCategory(bannercategory);
+    }
+
+
+    /**
+	 * 根据轮播图分类id删除轮播图分类
+     * @method: delete/{id}
+     * @path : /admin/bannercategory/delete/{id}
+     * @param : id
+     * @result : int
+	 * 创建人:yykk
+	 * 创建时间：2022-02-20 20:17:40
+	 * @version 1.0.0
+	*/
+    @PostMapping("/bannercategory/delete/{id}")
+    public int deleteBannerCategoryById(@PathVariable("id") String id) {
+        if(Vsserts.isEmpty(id)){
+            throw new PugValidationException(ResultStatusEnumA.ID_NOT_EMPTY);
+        }
+        return bannercategoryService.deleteBannerCategoryById(new Long(id));
+    }
+
+
+   /**
+   	 * 根据轮播图分类ids批量删除轮播图分类
+     * @method: bannercategory/delBatch
+     * @path : /admin/bannercategory/delBatch
+     * @param : bannercategoryVo
+     * @result : boolean
+   	 * 创建人:yykk
+   	 * 创建时间：2022-02-20 20:17:40
+   	 * @version 1.0.0
+   	*/
+    @PostMapping("/bannercategory/delBatch")
+    public boolean delBannerCategory(@RequestBody BannerCategoryVo bannercategoryVo) {
+        log.info("你要批量删除的IDS是:{}", bannercategoryVo.getBatchIds());
+        if (Vsserts.isEmpty(bannercategoryVo.getBatchIds())) {
+            throw new PugValidationException(ResultStatusEnumA.ID_NOT_EMPTY);
+        }
+        return bannercategoryService.delBatchBannerCategory(bannercategoryVo.getBatchIds());
+    }
+
+}

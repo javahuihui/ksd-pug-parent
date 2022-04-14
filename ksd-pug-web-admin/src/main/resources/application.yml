@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: ${profile:dev}
+  servlet:
+    multipart:
+      enabled: true
+      # 是单个文件大小 默认1M 10KB
+      max-file-size: 2MB
+      # 是设置总上传的数据大小
+      max-request-size: 10MB
+      #当文件达到多少时进行磁盘写入
+      file-size-threshold: 20MB
+
+# mybatis自身的配置和mp和tk无关
+mybatis-plus:
+  configuration:
+    # 建议dev开启，因为看到sql执行过程
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # mapper.xml存储的位置默认  classpath*:/mapper/*.xml 可以不配置，配置的目的就是告诉你可以修改
+  mapper-locations: classpath*:/mapper/*.xml
+  # 包别名的配置，但是配置不使用，要么就删掉
+  type-aliases-package: com.ksd.pug.pojo
